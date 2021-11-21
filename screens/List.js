@@ -15,11 +15,6 @@ class List extends Component {
         this._loadPosts()
     }
 
-    mapStateToProps = (state) => {
-        const { data } = state
-        return { data: data }
-    }
-
     _loadPosts = () => {
         fetch('http://jsonplaceholder.typicode.com/posts?_start=0&_limit=5')
         .then(response => response.json())
@@ -59,6 +54,10 @@ class List extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return { data: state.data };
+};
 
 const styles = StyleSheet.create({
     style: {
