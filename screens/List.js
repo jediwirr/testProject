@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { connect } from 'react-redux';
+import { setData } from '../store/actions';
 
 class List extends Component {
     constructor(props) {
         super(props);
         this.state = ({
-            data: [],
             date: new Date().toString()
         })
     };
@@ -14,14 +15,17 @@ class List extends Component {
         this._loadPosts()
     }
 
+    mapStateToProps = (state) => {
+        const { data } = state
+        return { data: data }
+    }
+
     _loadPosts = () => {
         fetch('http://jsonplaceholder.typicode.com/posts?_start=0&_limit=5')
         .then(response => response.json())
         .then(response => {
-            console.log(response)
-            this.setState({
-                data: response
-            })
+            console.log(response);
+            this.props.setData(response);
         })
     }
 
@@ -41,7 +45,7 @@ class List extends Component {
         return(
             <View>
                 {
-                    this.state.data.map(item => (
+                    this.props.data.map(item => (
                         <View key={item.id} style={styles.style} accessible>
                         <TouchableOpacity onPress={() => this._moveToDetails(item.id)}>
                             <Text>{this.state.date}</Text>
@@ -68,4 +72,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default List;
+export default connect(mapStateToProps, { setData })(List);
