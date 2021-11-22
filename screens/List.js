@@ -28,7 +28,7 @@ class List extends Component {
     }
 
     loadPosts = async () => {
-        await fetch(`http://jsonplaceholder.typicode.com/posts?_start=0&_limit=${this.state.limit}`)
+        await fetch(`https://jsonplaceholder.typicode.com/posts?_start=0&_limit=${this.state.limit}`)
         .then(response => response.json())
         .then(response => {
             // console.log(response);
@@ -43,7 +43,7 @@ class List extends Component {
     }
 
     deletePost = (id) => {
-        fetch(`http://jsonplaceholder.typicode.com/posts/${id}`, {
+        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
             method: 'DELETE',
         })
         .then(response => response.json())

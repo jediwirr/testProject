@@ -15,7 +15,7 @@ class Details extends Component {
     };
 
     getComments = async () => {
-        await fetch(`http://jsonplaceholder.typicode.com/comments?postId=${id}`)
+        await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${id}`)
         .then(response => response.json())
         .then(response => {
             console.log(response);
