@@ -12,7 +12,7 @@ export default class Navigator extends Component {
             <NavigationContainer>
                 <Stack.Navigator>
                     <Stack.Screen name="List" component={List} />
-                    <Stack.Screen name="Details" component={Details} />
+                    <Stack.Screen name="Post" component={Details} />
                 </Stack.Navigator>
             </NavigationContainer>
           );

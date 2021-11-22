@@ -1,31 +1,45 @@
 import React, { Component } from 'react';
-import { Button, Text, TouchableOpacity, View, ScrollView } from 'react-native';
+import { Button, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setData } from '../store/actions';
 import { styles } from '../styles/styles';
 
+const Item = ({id, title, moveToDetails, deletePost}) => (
+    <View style={styles.style}>
+        <Text>{new Date().toString()}</Text>
+        <TouchableOpacity onPress={() => moveToDetails(id)}>
+            <Text style={styles.title}>{title}</Text>
+        </TouchableOpacity>
+        <Button title="DELETE POST" onPress={() => deletePost(id)} />
+    </View>
+);
+
 class List extends Component {
     constructor() {
         super();
+        this.state = ({
+            limit: 5
+        })
     };
 
     componentDidMount() {
-        this.loadPosts();
+        this.loadPosts(5);
     }
 
-    loadPosts = () => {
-        fetch('http://jsonplaceholder.typicode.com/posts?_start=0&_limit=5')
+    loadPosts = async () => {
+        await fetch(`http://jsonplaceholder.typicode.com/posts?_start=0&_limit=${this.state.limit}`)
         .then(response => response.json())
         .then(response => {
             // console.log(response);
             this.props.setData(response);
             console.log(this.props.data);
         })
-    }
+        .catch(error => console.log(error));
+    };
 
     moveToDetails = (id) => {
-        this.props.navigation.navigate('Details', {id: id});
+        this.props.navigation.navigate('Post', {id: id});
     }
 
     deletePost = (id) => {
@@ -34,23 +48,33 @@ class List extends Component {
         })
         .then(response => response.json())
         .then(response => console.log(response))
+        .catch(error => console.log(error));
     }
+
+    endReachedHandle = () => {
+        this.setState({
+            limit: this.state.limit + 5
+        });
+        this.loadPosts();
+    }
+
+    renderItem = ({item}) => (
+        <Item 
+            id={item.id} 
+            title={item.title} 
+            moveToDetails={this.moveToDetails} 
+            deletePost={this.deletePost} 
+        />
+    );
 
     render() {
         return(
-            <ScrollView>
-                {
-                    !this.props.data ? <Text>'Loading...'</Text> : this.props.data.map(item => (
-                        <View key={item.id} style={styles.style}>
-                            <Text>{new Date().toString()}</Text>
-                            <TouchableOpacity onPress={() => this.moveToDetails(item.id)}>
-                                <Text key={item.title} style={styles.title}>{item.title}</Text>
-                            </TouchableOpacity>
-                            <Button title="DELETE POST" onPress={() => this.deletePost(item.id)} />
-                        </View>
-                    ))
-                }
-            </ScrollView>
+            <FlatList
+                data={this.props.data}
+                renderItem={this.renderItem}
+                keyExtractor={item => item.id}
+                onEndReached={this.endReachedHandle}
+            />
         )
     }
 }

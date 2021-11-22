@@ -14,8 +14,8 @@ class Details extends Component {
         this.getComments();
     };
 
-    getComments = () => {
-        fetch(`http://jsonplaceholder.typicode.com/comments?postId=${id}`)
+    getComments = async () => {
+        await fetch(`http://jsonplaceholder.typicode.com/comments?postId=${id}`)
         .then(response => response.json())
         .then(response => {
             console.log(response);
@@ -29,14 +29,13 @@ class Details extends Component {
                 {
                     this.props.data.map(item => (
                         item.id != id ? <></> :
-                            <View style={styles.style}>
+                            <View key={item.id} style={styles.style}>
                                 <Text style={styles.title}>{item.title}</Text>
                                 <Text style={styles.body}>{item.body}</Text>
-                                {/* <Text>{item.title}</Text> */}
                             </View>
                     ))
                 }
-                <Text style={styles.title}>Comments</Text>
+                <Text style={{ ...styles.title, textAlign: 'center'}}>Comments</Text>
                 {
                     !this.state.comments ? 'No comments yet' :
                     this.state.comments.map(item => (
