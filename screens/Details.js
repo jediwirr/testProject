@@ -1,18 +1,61 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
+import {connect } from 'react-redux';
+import { styles } from '../styles/styles';
 
 class Details extends Component {
     constructor(props) {
         super(props);
+        ({ id } = this.props.route.params);
+        this.state = ({ comments: [] })
+    }
+
+    componentDidMount() {
+        this.getComments();
+    };
+
+    getComments = () => {
+        fetch(`http://jsonplaceholder.typicode.com/comments?postId=${id}`)
+        .then(response => response.json())
+        .then(response => {
+            console.log(response);
+            this.setState({ comments: response });
+        });
     }
 
     render() {
         return(
-            <View>
-                <Text>DETAILS</Text>
-            </View>
+            <ScrollView>
+                {
+                    this.props.data.map(item => (
+                        item.id != id ? <></> :
+                            <View style={styles.style}>
+                                <Text style={styles.title}>{item.title}</Text>
+                                <Text style={styles.body}>{item.body}</Text>
+                                {/* <Text>{item.title}</Text> */}
+                            </View>
+                    ))
+                }
+                <Text style={styles.title}>Comments</Text>
+                {
+                    !this.state.comments ? 'No comments yet' :
+                    this.state.comments.map(item => (
+                        <View key={item.id} style={styles.style}>
+                            <Text style={styles.commentTitle}>{item.name}</Text>
+                            <Text>{item.email}</Text>
+                            <Text>{item.body}</Text>
+                        </View>
+                    ))
+                }
+            </ScrollView>
         )
     }
 }
 
-export default Details;
+const mapStateToProps = (state) => {
+    return {
+        data: state.data
+    }
+}
+
+export default connect(mapStateToProps)(Details);

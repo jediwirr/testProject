@@ -12,8 +12,8 @@ import { Provider } from 'react-redux';
 import store from './store/Store';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
   }
 
   render() {

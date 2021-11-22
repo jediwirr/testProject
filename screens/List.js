@@ -1,34 +1,34 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { setData } from '../store/actions';
+import { styles } from '../styles/styles';
 
 class List extends Component {
-    constructor(props) {
-        super(props);
-        this.state = ({
-            date: new Date().toString()
-        })
+    constructor() {
+        super();
     };
 
     componentDidMount() {
-        this._loadPosts()
+        this.loadPosts();
     }
 
-    _loadPosts = () => {
+    loadPosts = () => {
         fetch('http://jsonplaceholder.typicode.com/posts?_start=0&_limit=5')
         .then(response => response.json())
         .then(response => {
-            console.log(response);
+            // console.log(response);
             this.props.setData(response);
+            console.log(this.props.data);
         })
     }
 
-    _moveToDetails = (id) => {
+    moveToDetails = (id) => {
         this.props.navigation.navigate('Details', {id: id});
     }
 
-    _deletePost = (id) => {
+    deletePost = (id) => {
         fetch(`http://jsonplaceholder.typicode.com/posts/${id}`, {
             method: 'DELETE',
         })
@@ -38,37 +38,29 @@ class List extends Component {
 
     render() {
         return(
-            <View>
+            <ScrollView>
                 {
-                    this.props.data.map(item => (
-                        <View key={item.id} style={styles.style} accessible>
-                        <TouchableOpacity onPress={() => this._moveToDetails(item.id)}>
-                            <Text>{this.state.date}</Text>
-                            <Text key={item.title} style={styles.title}>{item.title}</Text>
-                        </TouchableOpacity>
-                        <Button title="DELETE POST" onPress={() => this._deletePost(item.id)} />
+                    !this.props.data ? <Text>'Loading...'</Text> : this.props.data.map(item => (
+                        <View key={item.id} style={styles.style}>
+                            <Text>{new Date().toString()}</Text>
+                            <TouchableOpacity onPress={() => this.moveToDetails(item.id)}>
+                                <Text key={item.title} style={styles.title}>{item.title}</Text>
+                            </TouchableOpacity>
+                            <Button title="DELETE POST" onPress={() => this.deletePost(item.id)} />
                         </View>
                     ))
                 }
-            </View>
+            </ScrollView>
         )
     }
 }
 
-const mapStateToProps = (state) => {
+function mapStateToProps(state) {
     return { data: state.data };
 };
 
-const styles = StyleSheet.create({
-    style: {
-        padding: 8,
-        borderBottomColor: 'gray',
-        borderBottomWidth: 1
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold'
-    }
-})
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({setData: setData}, dispatch);
+}
 
-export default connect(mapStateToProps, { setData })(List);
+export default connect(mapStateToProps, mapDispatchToProps)(List);
